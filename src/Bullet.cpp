@@ -10,22 +10,23 @@
 #include <Core/Components/Mesh.h>
 
 namespace PetrolEngine {
-	void Collider::onStart(){
+	void BulletCollider::onStart(){
 	    auto& q = transform->rotation;
-            auto& p = transform->position;
-            auto& s = transform->scale;
+    	auto& p = transform->position;
+      auto& s = transform->scale;
 
 	    shape = getShape();
-            motionState = new btDefaultMotionState(btTransform(btQuaternion(q.x, q.y, q.z, q.w), btVector3(p.x, p.y, p.z)));
+    	motionState = new btDefaultMotionState(btTransform(btQuaternion(q.x, q.y, q.z, q.w), btVector3(p.x, p.y, p.z)));
 
 	    if(localInertia) shape->calculateLocalInertia(mass, inertia);
 
 	    auto rigidBodyCI = btRigidBody::btRigidBodyConstructionInfo(mass, motionState, shape, inertia);
             rigidBody = new btRigidBody(rigidBodyCI);
-	    entity->getScene()->world->dynamicsWorld->addRigidBody(rigidBody);
+  		
+	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController>()->getComponent<PhysicsController>().component)->dynamicsWorld->addRigidBody(rigidBody);
 	}
 	
-	void Collider::onUpdate(){
+	void BulletCollider::onUpdate(){
 		btTransform t;
 		rigidBody->getMotionState()->getWorldTransform(t);
 
@@ -39,14 +40,14 @@ namespace PetrolEngine {
 		this->transform->rotation.w = t.getRotation().getW();
 	}
 
-	Collider::~Collider(){
-	    entity->getScene()->world->dynamicsWorld->removeRigidBody(rigidBody);
+	BulletCollider::~BulletCollider(){
+	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController>()->getComponent<PhysicsController>().component)->dynamicsWorld->removeRigidBody(rigidBody);
 	    delete rigidBody->getMotionState();
 	    delete rigidBody;
 	    delete shape;
 	}
 
-	btCollisionShape* MeshCollider::getShape(){
+	btCollisionShape* BulletMeshCollider::getShape(){
 	    btConvexHullShape* hull = new btConvexHullShape();
 	    
 	    auto& mesh = entity->getComponent<Mesh>();
@@ -62,15 +63,15 @@ namespace PetrolEngine {
 	    return (btCollisionShape*) hull;
 	}
 
-	btCollisionShape* BoxCollider::getShape(){
+	btCollisionShape* BulletBoxCollider::getShape(){
 	    return new btBoxShape(btVector3(
-		this->transform->scale.x,
-		this->transform->scale.y,
-		this->transform->scale.z
+				this->transform->scale.x,
+				this->transform->scale.y,
+				this->transform->scale.z
 	    ));
 	}
 
-	btCollisionShape* PlaneCollider::getShape(){
+	btCollisionShape* BulletPlaneCollider::getShape(){
 	    return new btStaticPlaneShape(btVector3(0, 1, 0), 1);
 	}
 

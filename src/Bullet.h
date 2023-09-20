@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-
+#include <Static/Window/Window.h>
 #include "Bullet/deps/bullet3/Extras/VHACD/inc/vhacdMesh.h"
 #include "BulletCollision/CollisionDispatch/btCollisionDispatcher.h"
 #include "BulletCollision/CollisionDispatch/btDefaultCollisionConfiguration.h"
@@ -10,9 +10,13 @@
 #include "btBulletDynamicsCommon.h"
 
 #include <Core/Components/Component.h>
+#include <Core/Physics/ColliderApi.h>
+#include <Core/Physics/PhysicsController.h>
 
 namespace PetrolEngine {
-    class Collider: public Component {
+    class BulletController;
+
+    class BulletCollider: public Component {
     public:
         btCollisionShape* shape;
         btDefaultMotionState* motionState;
@@ -20,8 +24,9 @@ namespace PetrolEngine {
         btVector3 inertia;
         btRigidBody* rigidBody;
         bool localInertia;
+        BulletController* controller;
         
-        Collider(int m, bool ci){
+        BulletCollider(int m, bool ci){
             mass = m;
             localInertia = ci;
             inertia = btVector3(1, 1, 1);
@@ -31,36 +36,41 @@ namespace PetrolEngine {
         void onStart();
         void onUpdate();
 
-        ~Collider();
+        ~BulletCollider();
     };
 
-    class PlaneCollider: public Collider {
+    class BulletPlaneCollider: public BulletCollider {
     public:
-        PlaneCollider(int m, bool ci) : Collider(m, ci) {};
+        BulletPlaneCollider(int m, bool ci): BulletCollider(m, ci) {};
         btCollisionShape* getShape();
     };
 
-    class MeshCollider: public Collider {
+    class BulletMeshCollider: public BulletCollider {
     public:
-        MeshCollider(int m, bool ci) : Collider(m, ci) {};
+        BulletMeshCollider(int m, bool ci): BulletCollider(m, ci) {};
         btCollisionShape* getShape();
     };
 
-    class BoxCollider: public Collider {
+    class BulletBoxCollider: public BulletCollider {
     public:
-        BoxCollider(int m, bool ci) : Collider(m, ci) {};
+        BulletBoxCollider(int m, bool ci): BulletCollider(m, ci) {};
         btCollisionShape* getShape();
     };
+   
     
-    class World {
+    class BulletController: public Component {
     public:
+        Component* newPlaneCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletPlaneCollider(mass, localInertia); }
+        Component*  newMeshCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletMeshCollider (mass, localInertia); }
+        Component*   newBoxCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletBoxCollider  (mass, localInertia); }
+
         btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
 	btCollisionDispatcher* dispatcher;
 	btSequentialImpulseConstraintSolver* solver;
 	btDiscreteDynamicsWorld* dynamicsWorld;
 	
-	World(){
+	BulletController(){
 		broadphase = new btDbvtBroadphase();
 		collisionConfiguration = new btDefaultCollisionConfiguration();
 		dispatcher = new btCollisionDispatcher(collisionConfiguration);
@@ -70,11 +80,11 @@ namespace PetrolEngine {
 		dynamicsWorld->setGravity(btVector3(0, -10, 0));
 	}
 
-        void update(double t){
-            dynamicsWorld->stepSimulation(t, 10);
+        void onUpdate(){
+            dynamicsWorld->stepSimulation(deltaTime, 10);
         }
 
-	~World(){
+	~BulletController(){
 		delete dynamicsWorld;
                 delete solver;
                 delete dispatcher;
@@ -82,5 +92,13 @@ namespace PetrolEngine {
                 delete broadphase;
 	}
 
+    };
+
+    class BulletCreator: public PhysicsCreator {
+    public:
+        Component* newPhysicsController() { return new BulletController(); }
+        Component* newPlaneCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletPlaneCollider(mass, localInertia); }
+        Component*  newMeshCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletMeshCollider (mass, localInertia); }
+        Component*   newBoxCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletBoxCollider  (mass, localInertia); }
     };
 }
