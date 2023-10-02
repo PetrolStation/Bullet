@@ -25,7 +25,7 @@ namespace PetrolEngine {
         btRigidBody* rigidBody;
         bool localInertia;
         BulletController* controller;
-        
+    
         BulletCollider(int m, bool ci){
             mass = m;
             localInertia = ci;
@@ -36,7 +36,7 @@ namespace PetrolEngine {
         void onStart();
         void onUpdate();
 
-        ~BulletCollider();
+         ~BulletCollider();
     };
 
     class BulletPlaneCollider: public BulletCollider {
