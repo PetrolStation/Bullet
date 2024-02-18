@@ -23,7 +23,7 @@ namespace PetrolEngine {
 	    auto rigidBodyCI = btRigidBody::btRigidBodyConstructionInfo(mass, motionState, shape, inertia);
             rigidBody = new btRigidBody(rigidBodyCI);
   		
-	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController>()->getComponent<PhysicsController>().component)->dynamicsWorld->addRigidBody(rigidBody);
+	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController3D>()->getComponent<PhysicsController3D>().component)->dynamicsWorld->addRigidBody(rigidBody);
 	}
 	
 	void BulletCollider::onUpdate(){
@@ -41,7 +41,7 @@ namespace PetrolEngine {
 	}
 
 	BulletCollider::~BulletCollider(){
-	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController>()->getComponent<PhysicsController>().component)->dynamicsWorld->removeRigidBody(rigidBody);
+	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController3D>()->getComponent<PhysicsController3D>().component)->dynamicsWorld->removeRigidBody(rigidBody);
 	    delete rigidBody->getMotionState();
 	    delete rigidBody;
 	    delete shape;

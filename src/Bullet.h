@@ -16,14 +16,12 @@
 namespace PetrolEngine {
     class BulletController;
 
-    class BulletCollider: public Component {
+    class BulletCollider: public Collider3DApi {
     public:
         btCollisionShape* shape;
         btDefaultMotionState* motionState;
-        btScalar mass;
         btVector3 inertia;
         btRigidBody* rigidBody;
-        bool localInertia;
         BulletController* controller;
     
         BulletCollider(int m, bool ci){
@@ -32,7 +30,7 @@ namespace PetrolEngine {
             inertia = btVector3(1, 1, 1);
         }
         virtual btCollisionShape* getShape() = 0;
-        
+        void applyForce(glm::vec3 force) {rigidBody->applyCentralForce(btVector3(force.x, force.y, force.z));}
         void onStart();
         void onUpdate();
 
@@ -60,9 +58,9 @@ namespace PetrolEngine {
     
     class BulletController: public Component {
     public:
-        Component* newPlaneCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletPlaneCollider(mass, localInertia); }
-        Component*  newMeshCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletMeshCollider (mass, localInertia); }
-        Component*   newBoxCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletBoxCollider  (mass, localInertia); }
+        Collider3DApi* newPlaneCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletPlaneCollider(mass, localInertia); }
+        Collider3DApi*  newMeshCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletMeshCollider (mass, localInertia); }
+        Collider3DApi*   newBoxCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletBoxCollider  (mass, localInertia); }
 
         btBroadphaseInterface* broadphase;
 	btDefaultCollisionConfiguration* collisionConfiguration;
@@ -94,11 +92,11 @@ namespace PetrolEngine {
 
     };
 
-    class BulletCreator: public PhysicsCreator {
+    class BulletCreator: public PhysicsCreator3D {
     public:
         Component* newPhysicsController() { return new BulletController(); }
-        Component* newPlaneCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletPlaneCollider(mass, localInertia); }
-        Component*  newMeshCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletMeshCollider (mass, localInertia); }
-        Component*   newBoxCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletBoxCollider  (mass, localInertia); }
+        Collider3DApi* newPlaneCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletPlaneCollider(mass, localInertia); }
+        Collider3DApi*  newMeshCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletMeshCollider (mass, localInertia); }
+        Collider3DApi*   newBoxCollider(int mass, bool localInertia, glm::vec3 inertia) { return new BulletBoxCollider  (mass, localInertia); }
     };
 }
