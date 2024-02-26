@@ -8,6 +8,7 @@
 #include "BulletCollision/CollisionShapes/btCollisionShape.h"
 #include "BulletDynamics/Dynamics/btDiscreteDynamicsWorld.h"
 #include "btBulletDynamicsCommon.h"
+#include <Core/Physics/ColliderApi.h>
 
 #include <Core/Components/Component.h>
 #include <Core/Physics/ColliderApi.h>
