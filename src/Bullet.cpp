@@ -41,8 +41,12 @@ namespace PetrolEngine {
 	}
 
 	BulletCollider::~BulletCollider(){
-	    ((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController3D>()->getComponent<PhysicsController3D>().component)->dynamicsWorld->removeRigidBody(rigidBody);
-	    delete rigidBody->getMotionState();
+	    //((BulletController*)entity->getScene()->getEntityByComponent<PhysicsController3D>()->getComponent<PhysicsController3D>().component)->dynamicsWorld->removeRigidBody(rigidBody);
+	    Entity* tmpc = entity->getScene()->getEntityByComponent<PhysicsController3D>();
+			if(tmpc == nullptr) return;
+			if(tmpc->hasComponent<PhysicsController3D>() == false) return;
+			((BulletController*)tmpc->getComponent<PhysicsController3D>().component)->dynamicsWorld->removeRigidBody(rigidBody);
+			delete rigidBody->getMotionState();
 	    delete rigidBody;
 	    delete shape;
 	}

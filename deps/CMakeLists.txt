@@ -4,7 +4,7 @@ set(BUILD_CPU_DEMOS OFF CACHE BOOL "Build the CPU demos" FORCE)
 set(BUILD_OPENGL3_DEMOS OFF CACHE BOOL "Build the OpenGL 3 demos" FORCE)
 set(BUILD_EXTRAS OFF CACHE BOOL "Build Extras" FORCE)
 set(BUILD_UNIT_TESTS OFF CACHE BOOL "Build Unit Tests" FORCE)
-
+#set(BUILD_SHARED_LIBS ON CACHE BOOL "Use shared libraries" FORCE)
 
 add_subdirectory(bullet3)
 

@@ -9,8 +9,10 @@ PA_INCLUDE_DIRECTORIES(
 
 PA_LINK_LIBRARIES(
     BulletDynamics BulletCollision LinearMath Bullet3Common
+    #"${BULLET_LIBRARIES}"
 )
 
+#    BulletDynamics BulletCollision LinearMath Bullet3Common
 File(GLOB_RECURSE SOURCE_FILES src/*.cpp )
 File(GLOB_RECURSE HEADER_FILES src/*.h   )
 
@@ -20,3 +22,7 @@ pa_add_source_files(
 )
 
 add_subdirectory(deps)
+set_property(TARGET BulletDynamics PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET BulletCollision PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET LinearMath PROPERTY POSITION_INDEPENDENT_CODE ON)
+set_property(TARGET Bullet3Common PROPERTY POSITION_INDEPENDENT_CODE ON)
